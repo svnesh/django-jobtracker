@@ -1,0 +1,42 @@
+{% extends 'jobs/main.html' %}
+
+{% block content %}
+
+<div class="row">
+    <div class="col">
+        <h5>Project</h5>
+        <hr>
+        <div class="card card-body">
+
+            <table class="table table-sm">
+                <tr>
+                    <th>Name</th>
+                    <th>Client</th>
+                    <th>Country</th>
+                    <th>Platform</th>
+                    <th>Type</th>
+                    <th>Assigned</th>
+                    <th>Status</th>
+                </tr>
+
+                {% for i in projects %}
+                <tr>
+                    <td>{{i.name}}</td>
+                    <td>{{i.client}}</td>
+                    <td>{{i.country}}</td>
+                    <td>{{i.platform}}</td>
+                    <td>{{i.type}}</td>
+                    <td>
+                        {{i.handled.all|join:", "}}
+                    </td>
+                    <td>{{i.status}}</td>
+                </tr>
+            {% endfor %}
+
+            </table>
+        </div>
+    </div>
+
+</div>
+
+{% endblock %}

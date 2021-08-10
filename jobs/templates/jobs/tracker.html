@@ -1,0 +1,100 @@
+{% extends 'jobs/main.html' %}
+
+{% block content %}
+
+<div class="row">
+    <div class="col-md">
+        <h5>Daily Tracker</h5>
+        <hr>
+        <div class="row">
+            <div class="col">
+                <div class="card card-body">
+                    <form method="GET">
+                        <div class="row">
+                            <div class="form-group col-md-2">
+                              <label for="{{ mytrackFilter.form.employee.id_for_label }}">Employee: </label>
+                              <input type="text" class="form-control" name="employee" value="{{ mytrackFilter.form.employee.value|default_if_none:'' }}">
+                            </div>
+                            <div class="form-group col-md-2">
+                                <label for="{{ mytrackFilter.form.client.id_for_label }}">Client: </label>
+                                <input type="text" class="form-control" name="client" value="{{ mytrackFilter.form.client.value|default_if_none:'' }}">
+                            </div>
+                            <div class="form-group col-md-2">
+                                <label for="{{ mytrackFilter.form.job.id_for_label }}">Job: </label>
+                                <input type="text" class="form-control" name="job" value="{{ mytrackFilter.form.job.value|default_if_none:'' }}">
+                            </div>
+                            <div class="form-group col-md-2">
+                                <label for="{{ mytrackFilter.form.activity.id_for_label }}">Activity: </label>
+                                <input type="text" class="form-control" name="activity" value="{{ mytrackFilter.form.activity.value|default_if_none:'' }}">
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="form-group col-md-2">
+                                <label for="{{ mytrackFilter.form.start_date.id_for_label }}">From Date: </label>
+                                <input type="text" class="form-control" name="start_date" placeholder="mm/dd/yy" value="{{ mytrackFilter.form.start_date.value|default_if_none:'' }}">
+                            </div>
+                            <div class="form-group col-md-2">
+                                <label for="{{ mytrackFilter.form.end_date.id_for_label }}">To Date: </label>
+                                <input type="text" class="form-control" name="end_date" placeholder="mm/dd/yy" value="{{ mytrackFilter.form.end_date.value|default_if_none:'' }}">
+                            </div>
+                            <div class="form-group col-md-2">
+                                <label for="{{ mytrackFilter.form.date_range.id_for_label }}">Date Range: </label>
+                                <select id="inputState" name="date_range" class="form-select">
+                                    {% for v in mytrackFilter.form.date_range.field.choices %}
+                                    <option value="{{v.0}}">{{v.1}}</option>
+                                    {% endfor %}
+                                </select>                            
+                            </div>
+                            <div class="form-group col-md-2">
+                                <label for="{{ mytrackFilter.form.status.id_for_label }}">Status: </label>
+                                <select id="inputState" name="status" class="form-select">
+                                    {% for v in mytrackFilter.form.status.field.choices %}
+                                        <option value="{{v.0}}">{{v.1}}</option>
+                                    {% endfor %}
+                                </select>
+                            </div>
+                        </div>
+                        <br>
+                    <button class="btn btn-primary" type="submit">Filter</button>
+                  </form>
+                </div>
+            </div>
+            
+        </div>
+        <br>
+
+        <div class="card card-body">
+            <table class="table table-sm">
+                <tr>
+                    <th>Employee</th>
+                    <th>Client</th>
+                    <th>Job</th>
+                    <th>Activity</th>
+                    <th>Date</th>
+                    <th>Spent Time</th>
+                    <th>File Count</th>
+                    <th>Status</th>
+                    <th>Delete</th>
+                </tr>
+
+                {% for i in track %}
+                    <tr>
+                        <td>{{i.employee}}</td>
+                        <td>{{i.client}}</td>
+                        <td>{{i.job}}</td>
+                        <td>{{i.activity}}</td>
+                        <td>{{i.workedDate}}</td>
+                        <td>{{i.spentTimeHr}}h:{{i.spentTimeMin}}m</td>
+                        <td>{{i.fileCount}}</td>
+                        <td>{{i.status}}</td>       
+                        <td><a class="btn btn-sm btn-danger" href="{% url 'delete_function' i.id 'tracker' %}">Delete</a></td>
+                    </tr>
+                {% endfor %}
+
+            </table>
+        </div>
+
+    </div>
+</div>
+
+{% endblock %}

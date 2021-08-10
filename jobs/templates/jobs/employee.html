@@ -1,0 +1,43 @@
+{% extends 'jobs/main.html' %}
+
+{% block content %}
+
+<div class="row">
+    <div class="col-md">
+        <h5>Employees</h5>
+        <hr>
+        <div class="card card-body">
+            <table class="table table-sm">
+                <tr>
+                    <th>Name</th>
+                    <th>Emp. No.</th>
+                    <th>Designation</th>
+                    <th>Team</th>
+                    <th>Manager</th>
+                    <th>Location</th>
+                    <th>Date of Joining</th>
+                    <th>Update</th>
+                    <th>Delete</th>
+                </tr>
+
+                {% for i in employees %}
+                    <tr>
+                        <td>{{i.name}}</td>
+                        <td>{{i.empNum}}</td>
+                        <td>{{i.designation}}</td>
+                        <td>{{i.team}}</td>
+                        <td>{{i.manager}}</td>
+                        <td>{{i.location}}</td>
+                        <td>{{i.doj}}</td>
+                        <td><a class="btn btn-sm btn-info" href="{% url 'update_employee' i.id %}">Update</a></td>
+                        <td><a class="btn btn-sm btn-danger" href="{% url 'delete_function' i.id 'employee' %}">Delete</a></td>                        
+                    </tr>
+                {% endfor %}
+
+            </table>
+        </div>
+
+    </div>
+</div>
+
+{% endblock %}

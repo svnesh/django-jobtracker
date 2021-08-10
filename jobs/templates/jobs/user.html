@@ -1,0 +1,41 @@
+{% extends 'jobs/main.html' %}
+
+{% block content %}
+
+{% include 'jobs/user_status.html' %}
+
+<div class="row">
+    <div class="col">
+        <h5>Daily Tracker</h5>
+        <hr>
+        <div class="card card-body">
+            <a class="btn btn-primary btn-sm btn-block" href="{% url 'create_tracker' myUser %}">Add to tracker</a>
+            <table class="table table-sm">
+                <tr>
+                    <th></th>
+                    <th>Client</th>
+                    <th>Job</th>
+                    <th>Activity</th>
+                    <th>Spent Time</th>
+                    <th>File Count</th>
+                    <th>Status</th>
+                </tr>
+
+                {% for track in myUserTracker %}
+                    <tr>
+                        <td></td>
+                        <td>{{track.client}}</td>
+                        <td>{{track.job}}</td>
+                        <td>{{track.activity}}</td>
+                        <td>{{track.spentTimeHr}}h:{{track.spentTimeMin}}m</td>
+                        <td>{{track.fileCount}}</td>
+                        <td>{{track.status}}</td>
+                    </tr>
+                {% endfor %}
+            </table>
+        </div>
+    </div>
+
+</div>
+
+{% endblock content%}
