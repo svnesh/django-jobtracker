@@ -1,3 +1,4 @@
+from django.core import paginator
 from django.db.models.aggregates import Count
 from django.shortcuts import render, redirect
 from django.http import HttpResponse
@@ -11,6 +12,8 @@ from django.contrib.auth.decorators import login_required
 from .decorators import unauthenticated_user, allowed_users, admin_only
 from django.contrib.auth.models import Group
 from django.db.models import Sum
+from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
+import csv
 
 @unauthenticated_user
 def loginPage(request):
@@ -123,7 +126,17 @@ def clientForm(request):
 @allowed_users(allowed_roles=['admin'])
 def projects(request):
     project = Project.objects.all()
-    return render(request, 'jobs/project.html', {'projects':project})
+
+    page = request.GET.get('page', 1)
+    paginator = Paginator(project, 10)
+
+    try:
+        projects = paginator.page(page)
+    except PageNotAnInteger:
+        projects = paginator.page(1)
+    except EmptyPage:
+        projects = paginator.page(paginator.num_pages)
+    return render(request, 'jobs/project.html', {'projects':projects})
 
 @login_required(login_url='login')
 @allowed_users(allowed_roles=['admin'])
@@ -240,9 +253,22 @@ def tracker(request):
         track = track.filter(employee=request.user.employee)
     else:
         track = Tracker.objects.all()
-
+    
     mytrackFilter = TrackerFilter(request.GET, queryset=track)
     track = mytrackFilter.qs
+    #print(track[0].values)
+    export = request.GET.get('export')
+    if ((export != None) and (track)):
+        response = HttpResponse(
+            content_type='text/csv',
+            headers={'Content-Disposition': 'attachment; filename="report.csv"'},
+        )
+        writer = csv.writer(response)
+        writer.writerow(['Employee','Client','Job','Activity','Date','Spent Time Hrs','Spent Time min','File Count','Status'])
+        print('here')
+        for i in track:
+            writer.writerow([i.employee,i.client,i.job,i.activity,i.workedDate,i.spentTimeHr,i.spentTimeMin,i.fileCount,i.status])
+        return response
 
     context = {'track':track, 'mytrackFilter':mytrackFilter}
     return render(request, 'jobs/tracker.html', context)
