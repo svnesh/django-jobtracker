@@ -4,7 +4,7 @@ from django.shortcuts import render, redirect
 from django.http import HttpResponse
 from django.utils import timezone
 from .models import *
-from .forms import CreateClientForm, CreateEmployeeForm, ProjectForm, CreateProject, CreateUserForm, CreateTrackerForm
+from .forms import CreateClientForm, CreateEmployeeForm, EmployeeAccountForm, ProjectForm, CreateProject, CreateUserForm, CreateTrackerForm
 from .filters import ProjectFilter, TrackerFilter
 from django.contrib.auth import authenticate, login, logout
 from django.contrib import messages
@@ -40,9 +40,6 @@ def registerPage(request):
         if form.is_valid():
             user = form.save()
             username = form.cleaned_data.get('username')
-
-            group = Group.objects.get(name='employee')
-            user.groups.add(group)
             
             messages.success(request, 'Account created for ' + username)
             return redirect('login')
@@ -59,20 +56,24 @@ def UserPage(request):
 
     tracker = Tracker.objects.all()
     myUserTracker = tracker.filter(employee=myUser)
+    month_working_hr = '0'
+    tot_filecount = '0'
+    tot_wip = '0'
 
-    current_month_jobs = myUserTracker.filter(workedDate__gte=timezone.now().replace(day=1, hour=0, minute=0, second=0, microsecond=0))
-    tot_hr = current_month_jobs.aggregate(Sum('spentTimeHr'))
-    tot_min = current_month_jobs.aggregate(Sum('spentTimeMin'))
-    min_hr = tot_min['spentTimeMin__sum'] // 60
-    ext_min = tot_min['spentTimeMin__sum'] % 60
-    tot_hr = tot_hr['spentTimeHr__sum'] + min_hr
-    month_working_hr = "{}h:{}m".format(tot_hr, ext_min)
+    if myUserTracker.exists():
+        current_month_jobs = myUserTracker.filter(workedDate__gte=timezone.now().replace(day=1, hour=0, minute=0, second=0, microsecond=0))
+        tot_hr = current_month_jobs.aggregate(Sum('spentTimeHr'))
+        tot_min = current_month_jobs.aggregate(Sum('spentTimeMin'))
+        min_hr = tot_min['spentTimeMin__sum'] // 60
+        ext_min = tot_min['spentTimeMin__sum'] % 60
+        tot_hr = tot_hr['spentTimeHr__sum'] + min_hr
+        month_working_hr = "{}h:{}m".format(tot_hr, ext_min)
 
-    tot_filecount = current_month_jobs.aggregate(Sum('fileCount'))
-    tot_filecount = tot_filecount['fileCount__sum']
+        tot_filecount = current_month_jobs.aggregate(Sum('fileCount'))
+        tot_filecount = tot_filecount['fileCount__sum']
 
-    tot_wip = current_month_jobs.filter(status='WIP').aggregate(Count('status'))
-    tot_wip = tot_wip['status__count']
+        tot_wip = current_month_jobs.filter(status='WIP').aggregate(Count('status'))
+        tot_wip = tot_wip['status__count']
 
     context = {'myUser':myUser, 'myUserProjects':myUserProjects, 'myUserTracker':myUserTracker, \
         'month_working_hr':month_working_hr, 'tot_filecount':tot_filecount, 'tot_wip':tot_wip}
@@ -154,7 +155,7 @@ def employeeForm(request):
             form.save()
             return redirect('/')
         else:
-            print(form.errors.as_json())
+            print(form.errors.as_json())#important to check form errors
             form = CreateEmployeeForm()
     context = {'form':form}
     return render(request, 'jobs/employee_form.html', context=context)
@@ -169,9 +170,25 @@ def updateEmployee(request, pk):
         if form.is_valid():
             form.save()
             return redirect('employee')
+        else:
+            print(form.errors.as_json())
 
     context = {'form':form}
     return render(request, 'jobs/employee_form.html', context)
+
+
+@login_required(login_url='login')
+@allowed_users(allowed_roles=['employee'])
+def accountSettings(request):
+    employee = request.user.employee
+    form = EmployeeAccountForm(instance=employee)
+
+    if request.method == 'POST':
+        form = EmployeeAccountForm(request.POST, request.FILES, instance=employee)
+        if form.is_valid():
+            form.save()
+    context = {'form':form}
+    return render (request, 'jobs/account_setting.html', context)
 
 @login_required(login_url='login')
 @allowed_users(allowed_roles=['admin'])
@@ -256,7 +273,6 @@ def tracker(request):
     
     mytrackFilter = TrackerFilter(request.GET, queryset=track)
     track = mytrackFilter.qs
-    #print(track[0].values)
     export = request.GET.get('export')
     if ((export != None) and (track)):
         response = HttpResponse(
@@ -264,10 +280,10 @@ def tracker(request):
             headers={'Content-Disposition': 'attachment; filename="report.csv"'},
         )
         writer = csv.writer(response)
-        writer.writerow(['Employee','Client','Job','Activity','Date','Spent Time Hrs','Spent Time min','File Count','Status'])
-        print('here')
+        writer.writerow(['Employee','Client','Job','Activity','Date','Spent Time','File Count','Status'])
         for i in track:
-            writer.writerow([i.employee,i.client,i.job,i.activity,i.workedDate,i.spentTimeHr,i.spentTimeMin,i.fileCount,i.status])
+            espentTime = '{}h:{}m'.format(i.spentTimeHr,i.spentTimeMin)
+            writer.writerow([i.employee,i.client,i.job,i.activity,i.workedDate,espentTime,i.fileCount,i.status])
         return response
 
     context = {'track':track, 'mytrackFilter':mytrackFilter}

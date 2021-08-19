@@ -1,4 +1,5 @@
 from django.urls import path
+#from django.contrib.auth import views as auth_views
 from . import views
 
 urlpatterns = [
@@ -13,6 +14,7 @@ urlpatterns = [
     path('create_client', views.clientForm, name='create_client'),
 
     path('employee/', views.employee, name='employee'),
+    path('account/', views.accountSettings, name='account'),
     path('create_employee/', views.employeeForm, name='create_employee'),
     path('update_employee/<str:pk>', views.updateEmployee, name='update_employee'),
 

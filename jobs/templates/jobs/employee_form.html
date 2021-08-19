@@ -34,6 +34,10 @@
                         <input type="text" class="form-control" name="location" value="{{ form.location.value|default_if_none:'' }}">
                     </div>
                     <div class="form-group col-md-4">
+                        <label for="Location">Email:</label>
+                        <input type="text" class="form-control" name="email" value="{{ form.email.value|default_if_none:'' }}">
+                    </div>
+                    <div class="form-group col-md-4">
                         <label for="dojoin">Date of Joining:</label>
                         <div class="input-group date" id="datetimepicker1" data-target-input="nearest">
                             <input type="text" class="form-control datetimepicker-input" name="doj" data-target="#datetimepicker1"/>
@@ -45,7 +49,7 @@
                     <script type="text/javascript">
                         $(function () {
                             $('#datetimepicker1').datetimepicker({
-                                format: 'DD/MM/YYYY' /*remove this line if you want to use time as well */
+                                format: 'MM/DD/YYYY' /*remove this line if you want to use time as well */
                             });
                         });
                     </script>
@@ -61,7 +65,7 @@
                     <script type="text/javascript">
                         $(function () {
                             $('#datetimepicker2').datetimepicker({
-                                format: 'DD/MM/YYYY' /*remove this line if you want to use time as well */
+                                format: 'MM/DD/YYYY' /*remove this line if you want to use time as well */
                             });
                         });
                     </script>
