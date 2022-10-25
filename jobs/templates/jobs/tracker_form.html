@@ -7,11 +7,11 @@
 <form action="" method="POST">
     {% csrf_token %}
     <div class="row">
-      <div class="form-group col-md-4">
+      <div class="form-group col-md-2">
         <label for="{{ form.employee.id_for_label }}">Employee: </label>
         <input type="text" class="form-control" name="employee" value="{{ form.employee.value }}">
       </div>
-      <div class="form-group col-md-4">
+      <div class="form-group col-md-2">
         <label for="{{ project_details.client.id_for_label }}">Client: </label>
         <select id="inputState" name="client" class="form-select">
             <option selected>--Client name--</option>
@@ -21,26 +21,38 @@
         </select>
         <!-- <input type="text" class="form-control" id="cli1" value="{{ form.client.value|default_if_none:'' }}"> -->
       </div>
-    </div>
-    <div class="form-group col-md-4">
-      <label for="{{ form.job.id_for_label }}">Job</label>
-      <select id="inputState" name="job" class="form-select">
-        <option selected>--Project name--</option>
-        {% for c in project_details %}
-            <option value="{{c.name}}">{{c.name}}</option>
-        {% endfor %}
-    </select>
-      <!-- <input type="text" class="form-control" id="job1" value="{{ form.job.value|default_if_none:'' }}"> -->
-    </div>
-    <div class="form-group col-md-4">
-      <label for="{{ form.activity.id_for_label }}">Activity</label>
-      <input type="text" class="form-control" name="activity" value="{{ form.activity.value|default_if_none:'' }}">
+      <div class="form-group col-md-2">
+        <label for="{{ form.job.id_for_label }}">Job</label>
+        <select id="inputState" name="job" class="form-select">
+          <option selected>--Project name--</option>
+          {% for c in project_details %}
+              <option value="{{c.name}}">{{c.name}}</option>
+          {% endfor %}
+      </select>
+        <!-- <input type="text" class="form-control" id="job1" value="{{ form.job.value|default_if_none:'' }}"> -->
+      </div>
+      <div class="form-group col-md-2">
+        <label for="{{ form.activity.id_for_label }}">Activity</label>
+        <input type="text" class="form-control" name="activity" value="{{ form.activity.value|default_if_none:'' }}">
+      </div>
     </div>
     <div class="row">
-      <!-- <div class="form-group col-md-3">
-        <label for="{{ form.workedDate.id_for_label }}">Date: </label>
-        <input type="text" class="form-control" id="sta1" value="{{ form.workedDate|default_if_none:'' }}">
-      </div> -->
+      <div class="form-group col-md-2">
+        <label for="form.workedDate.id_for_label">Date:</label>
+        <div class="input-group date" id="datetimepicker1" data-target-input="nearest">
+            <input type="text" class="form-control datetimepicker-input" name="workedDate" data-target="#datetimepicker1"/>
+            <div class="input-group-append" data-target="#datetimepicker1" data-toggle="datetimepicker">
+              <div class="input-group-text"><i class="fa fa-calendar"></i></div>
+            </div>
+        </div>                    
+    </div>
+    <script type="text/javascript">
+        $(function () {
+            $('#datetimepicker1').datetimepicker({
+                format: 'MM/DD/YYYY' /*remove this line if you want to use time as well */
+            });
+        });
+    </script>
       <div class="form-group col-md-2">
         <label for="{{ form.spentTimeHr.id_for_label }}">Spent Time: </label>
         <select id="inputState" name="spentTimeHr" class="form-select">
@@ -74,14 +86,16 @@
         <input type="text" class="form-control" name="fileCount" value="{{ form.fileCount.value|default_if_none:'' }}">
       </div>
     </div>
-    <div class="form-group col-md-3">
-        <label for="{{ form.status.id_for_label }}">Status: </label>
-        <select id="inputState" name="status" class="form-select">
-            <option selected>--Job status--</option>
-            {% for v,t in jstatus %}
-                <option value="{{v}}">{{v}}</option>
-            {% endfor %}
-        </select>
+    <div class="row">      
+      <div class="form-group col-sm-2">
+          <label for="{{ form.status.id_for_label }}">Status: </label>
+          <select id="inputState" name="status" class="form-select">
+              <option selected>--Job status--</option>
+              {% for v,t in jstatus %}
+                  <option value="{{v}}">{{v}}</option>
+              {% endfor %}
+          </select>
+      </div>
     </div>
     <br>
     <button type="submit" class="btn btn-primary">Add</button>

@@ -26,7 +26,7 @@ class Employee(models.Model):
     manager  = models.CharField(max_length=200, null=True)
     location  = models.CharField(max_length=200, null=True)
     email = models.CharField(max_length=200, null=True, blank=True)
-    profile_pic = models.ImageField(default='profile1.png', null=True, blank=True)
+    #profile_pic = models.ImageField(default='profile1.png', null=True, blank=True)
     doj = models.DateField(null=True, blank=True)
     dor = models.DateField(null=True, blank=True)
 
@@ -59,7 +59,7 @@ class Tracker(models.Model):
     client = models.CharField(max_length=200, null=True)
     job = models.CharField(max_length=200, null=True)
     activity = models.CharField(max_length=200, null=True)
-    workedDate = models.DateField(auto_now=True, null=True, blank=True)
+    workedDate = models.DateField(null=True, blank=True)
     spentTimeHr = models.IntegerField(null=True, blank=True)
     spentTimeMin = models.IntegerField(null=True, blank=True)
     fileCount = models.SmallIntegerField(null=True, blank=True)

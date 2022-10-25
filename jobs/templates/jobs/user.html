@@ -33,6 +33,41 @@
                     </tr>
                 {% endfor %}
             </table>
+
+            {% if myUserTracker.has_other_pages %}
+                <ul class="pagination justify-content-center">
+                    {% if myUserTracker.has_previous %}
+                        <li class="page-item">
+                            <a class="page-link" href="?page={{ myUserTracker.previous_page_number }}">Previous</a>
+                        </li>
+                    {% else %}
+                        <li class="page-item disabled">
+                            <a class="page-link" href="#" tabindex="-1" aria-disabled="true">Previous</a>
+                        </li>
+                    {% endif %}
+                    {% for i in myUserTracker.paginator.page_range %}
+                        {% if myUserTracker.number == i %}
+                            <li class="page-item active" aria-current="page">
+                                <span class="page-link">
+                                    {{ i }}
+                                    <span class="sr-only">(current)</span>
+                                </span>
+                            </li>
+                        {% else %}
+                            <li class="page-item"><a class="page-link" href="?page={{ i }}">{{ i }}</a></li>
+                        {% endif %}
+                    {% endfor %}
+                    {% if myUserTracker.has_next %}
+                        <li class="page-item">
+                            <a class="page-link" href="?page={{ myUserTracker.next_page_number }}">Next</a>
+                        </li>
+                    {% else %}
+                    <li class="page-item disabled">
+                        <a class="page-link" href="#" tabindex="-1" aria-disabled="true">Next</a>
+                    </li>
+                    {% endif %}
+                </ul>
+            {% endif %}
         </div>
     </div>
 

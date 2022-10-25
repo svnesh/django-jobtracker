@@ -56,6 +56,17 @@ def UserPage(request):
 
     tracker = Tracker.objects.all()
     myUserTracker = tracker.filter(employee=myUser)
+
+    page = request.GET.get('page', 1)
+    paginator = Paginator(myUserTracker, 10)
+
+    try:
+        myUserPagTrack = paginator.page(page)
+    except PageNotAnInteger:
+        myUserPagTrack = paginator.page(1)
+    except EmptyPage:
+        myUserPagTrack = paginator.page(paginator.num_pages)
+
     month_working_hr = '0'
     tot_filecount = '0'
     tot_wip = '0'
@@ -64,9 +75,9 @@ def UserPage(request):
         current_month_jobs = myUserTracker.filter(workedDate__gte=timezone.now().replace(day=1, hour=0, minute=0, second=0, microsecond=0))
         tot_hr = current_month_jobs.aggregate(Sum('spentTimeHr'))
         tot_min = current_month_jobs.aggregate(Sum('spentTimeMin'))
-        min_hr = tot_min['spentTimeMin__sum'] // 60
-        ext_min = tot_min['spentTimeMin__sum'] % 60
-        tot_hr = tot_hr['spentTimeHr__sum'] + min_hr
+        min_hr = (tot_min['spentTimeMin__sum'] // 60) if (tot_min['spentTimeMin__sum'] != None) else 0
+        ext_min = (tot_min['spentTimeMin__sum'] % 60) if (tot_min['spentTimeMin__sum'] != None) else 0
+        tot_hr = (tot_hr['spentTimeHr__sum'] + min_hr) if (tot_hr['spentTimeHr__sum'] != None) else 0 
         month_working_hr = "{}h:{}m".format(tot_hr, ext_min)
 
         tot_filecount = current_month_jobs.aggregate(Sum('fileCount'))
@@ -75,7 +86,7 @@ def UserPage(request):
         tot_wip = current_month_jobs.filter(status='WIP').aggregate(Count('status'))
         tot_wip = tot_wip['status__count']
 
-    context = {'myUser':myUser, 'myUserProjects':myUserProjects, 'myUserTracker':myUserTracker, \
+    context = {'myUser':myUser, 'myUserProjects':myUserProjects, 'myUserTracker':myUserPagTrack, \
         'month_working_hr':month_working_hr, 'tot_filecount':tot_filecount, 'tot_wip':tot_wip}
     return render(request, 'jobs/user.html', context=context)
 
@@ -270,6 +281,16 @@ def tracker(request):
         track = track.filter(employee=request.user.employee)
     else:
         track = Tracker.objects.all()
+
+    page = request.GET.get('page', 1)
+    paginator = Paginator(track, 10)
+
+    try:
+        ptrack = paginator.page(page)
+    except PageNotAnInteger:
+        ptrack = paginator.page(1)
+    except EmptyPage:
+        ptrack = paginator.page(paginator.num_pages)
     
     mytrackFilter = TrackerFilter(request.GET, queryset=track)
     track = mytrackFilter.qs
@@ -286,5 +307,5 @@ def tracker(request):
             writer.writerow([i.employee,i.client,i.job,i.activity,i.workedDate,espentTime,i.fileCount,i.status])
         return response
 
-    context = {'track':track, 'mytrackFilter':mytrackFilter}
+    context = {'track':ptrack, 'mytrackFilter':mytrackFilter}
     return render(request, 'jobs/tracker.html', context)

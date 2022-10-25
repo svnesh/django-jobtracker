@@ -28,6 +28,13 @@ class CreateTrackerForm(ModelForm):
     class Meta:
         model = Tracker
         fields = '__all__'
+        workedDate = forms.DateField(
+            input_formats=['%m/%d/%Y'],
+            widget=forms.DateInput(attrs={
+                'class': 'form-control datetimepicker-input',
+                'data-target': '#datetimepicker1'
+            }), required=False
+        )
 
 class CreateClientForm(ModelForm):
     class Meta:
@@ -37,13 +44,13 @@ class CreateClientForm(ModelForm):
 class EmployeeAccountForm(ModelForm):
     class Meta:
         model = Employee
-        fields = ['name','location','profile_pic']
+        fields = ['name','location']
 
 class CreateEmployeeForm(ModelForm):
     class Meta:
         model = Employee
         fields = '__all__'
-        exclude=['user','profile_pic']
+        exclude=['user']
         doj = forms.DateField(
             input_formats=['%m/%d/%Y'],
             widget=forms.DateInput(attrs={

@@ -15,7 +15,34 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/tempusdominus-bootstrap-4/5.1.2/js/tempusdominus-bootstrap-4.min.js" integrity="sha256-z0oKYg6xiLq3yJGsp/LsY9XykbweQlHl42jHv2XTBz4=" crossorigin="anonymous"></script>
 
     <head>
-        <link rel="stylesheet" type="text/css" href="{% static 'css/main.css' %}">
+        <style>
+            body{
+                background-color: #ebeff5;
+                display: flex;
+                flex-direction: column;
+                min-height: 100vh;
+            }
+            #total-clients{
+                background-color: #4cb4c7;
+            }
+            #total-employees{
+                background-color: #7abecc;
+            }
+            #total-jobs{
+                background-color: #7CD1C0;
+            }
+            span i{
+                font-size: 60%;
+            }
+            .container-fluid{
+                flex: 1;
+            }
+            .footer{
+                font-size: 14px;
+                color: gray;
+                margin: 10px 0 0 10px;
+            }
+        </style>
     </head>
     <body>
         {% include 'jobs/navbar.html' %}
@@ -25,8 +52,7 @@
 
             {% endblock content %}
         </div>
-        <hr>
-        <h5>Our footer</h5>
+        <div class="footer">&#169; All right reserved</div>
         <hr>
     </body>
     
